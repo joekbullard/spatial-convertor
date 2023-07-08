@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "spatial-convertor"
+version = "0.1.0"
+description = "Django application to convert spatial files between formats"
+authors = ["Joe Bullard <joekbullard@gmail.com>"]
+readme = "README.md"
+packages = [{include = "spatial_convertor"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+Django = "^4.2.3"
+django-extensions = "^3.2.3"
+fiona = "^1.9.4.post1"
+django-widget-tweaks = "^1.4.12"
+black = "^23.3.0"
+geopandas = "^0.13.2"
+django-allauth = "^0.54.0"
+djhtml = "^3.0.6"
+pre-commit = "^3.3.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
