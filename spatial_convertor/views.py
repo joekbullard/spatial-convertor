@@ -1,20 +1,12 @@
-from django.views.generic import TemplateView
 from django.http import HttpResponse, FileResponse
-from django.shortcuts import render
-from django.core.files.uploadedfile import TemporaryUploadedFile
-import zipfile
-from pathlib import Path
-from .convertor import convertor
-import fiona
-from fiona.io import ZipMemoryFile
-import geopandas as gpd
-import tempfile
-import os
-import codecs
-import shutil
+from django.views.generic.edit import CreateView
+from .models import SpatialRecord
+from .forms import RecordForm
 
-class HomeView(TemplateView):
-    template_name = "home.html"
+
+class RecordCreateView(CreateView):
+    model = SpatialRecord
+    form_class = RecordForm
 
 
 """
@@ -37,67 +29,65 @@ def extract_zip_file(zip_file):
 """
 
 
-import io
+# import io
 
-import fiona.io
+# import fiona.io
 
-def file_upload_view(request):
-    if request.method == "POST" and request.FILES:
-        uploaded_file = request.FILES["file"]
+# def file_upload_view(request):
+#     if request.method == "POST" and request.FILES:
+#         uploaded_file = request.FILES["file"]
 
-        with fiona.io.MemoryFile(uploaded_file, ext='gpkg') as src_memfile:
-            layers = src_memfile.listlayers()
-            for layername in layers:
-                with src_memfile.open() as src:
+#         with fiona.io.MemoryFile(uploaded_file, ext='gpkg') as src_memfile:
+#             layers = src_memfile.listlayers()
+#             for layername in layers:
+#                 with src_memfile.open() as src:
 
-                    out_crs = src.crs
-                    out_encoding = src.encoding
-                    out_schema = src.schema
+#                     out_crs = src.crs
+#                     out_encoding = src.encoding
+#                     out_schema = src.schema
 
-                    in_memory_zip = io.BytesIO()
-
-
-                    with fiona.io.MemoryFile() as out_memfile:
-                        with out_memfile.open(
-                            mode="w",
-                            crs=src.crs,
-                            driver="GPKG",
-                            schema=out_schema,
-                            encoding = out_encoding
-                        ) as out:
-                            out.writerecords(src)
-
-                            with zipfile.ZipFile(in_memory_zip, 'w') as zipf:
-                                zipf.writestr('output.zip', out_memfile.read())
-
-                    in_memory_zip.seek(0)
-
-                    # Create a Django HttpResponse with the in-memory ZIP file as content
-                    response = HttpResponse(in_memory_zip, content_type='application/force-download')
-
-                    # Set the appropriate headers for the ZIP download
-                    response['Content-Disposition'] = 'attachment; filename="downloaded_files.zip"'
-
-                    # Return the response
-                    return response
+#                     in_memory_zip = io.BytesIO()
 
 
+#                     with fiona.io.MemoryFile() as out_memfile:
+#                         with out_memfile.open(
+#                             mode="w",
+#                             crs=src.crs,
+#                             driver="GPKG",
+#                             schema=out_schema,
+#                             encoding = out_encoding
+#                         ) as out:
+#                             out.writerecords(src)
+
+#                             with zipfile.ZipFile(in_memory_zip, 'w') as zipf:
+#                                 zipf.writestr('output.zip', out_memfile.read())
+
+#                     in_memory_zip.seek(0)
+
+#                     # Create a Django HttpResponse with the in-memory ZIP file as content
+#                     response = HttpResponse(in_memory_zip, content_type='application/force-download')
+
+#                     # Set the appropriate headers for the ZIP download
+#                     response['Content-Disposition'] = 'attachment; filename="downloaded_files.zip"'
+
+#                     # Return the response
+#                     return response
 
 
-                    # with tempfile.TemporaryDirectory() as temp_dir:
-                    #     temp_dir = Path(temp_dir)
-                    #     filename = 'output.gpkg'
-                    #     fullpath = temp_dir / filename
+# with tempfile.TemporaryDirectory() as temp_dir:
+#     temp_dir = Path(temp_dir)
+#     filename = 'output.gpkg'
+#     fullpath = temp_dir / filename
 
-                    #     gdf.to_file(filename=fullpath, driver='GPKG', encoding='utf-8')
+#     gdf.to_file(filename=fullpath, driver='GPKG', encoding='utf-8')
 
-                    #     with open(fullpath, "rb") as fh:
-                    #         response = HttpResponse(fh, content_type="application/force-download")
-                    #         response['Content-Disposition'] = 'inline; filename=output.gpkg'
-                    #         return response
+#     with open(fullpath, "rb") as fh:
+#         response = HttpResponse(fh, content_type="application/force-download")
+#         response['Content-Disposition'] = 'inline; filename=output.gpkg'
+#         return response
 
 
-        ''''
+"""
 
         for layer in layers:
             print(layer)
@@ -133,8 +123,8 @@ def file_upload_view(request):
         #     zf.write(path_like_object, 'w')
         #     response['Content-Disposition'] = 'attachment; filename=test.zip'
         #     return response
-        '''
-        '''
+        """
+"""
         else:
             try:
                 layers = fiona.listlayers(path_like_object)
@@ -150,8 +140,8 @@ def file_upload_view(request):
         print(html)
 
         return HttpResponse(html)
-        '''
         """
+"""
 
         with zipfile.ZipFile(uploaded_file, "r") as zip_ref:
             with tempfile.TemporaryDirectory() as temp_dir:
